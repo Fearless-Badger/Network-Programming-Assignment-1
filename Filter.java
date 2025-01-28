@@ -3,12 +3,11 @@
 
 */
 
+import java.util.ArrayList;
+import java.io.*;
+
 import java.util.Scanner;
 import java.util.Properties;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 
 /**
    This program filters.
@@ -21,6 +20,8 @@ public class Filter
    public static void main(String[] args)
    {
       final Scanner in = new Scanner(System.in);
+
+      boolean DEBUG = true;
 
       int columns = 3;  // Default number of columns.
       int spacing = 10; // Default number of spaces between the ones places of two adjacent integers.
@@ -36,8 +37,42 @@ public class Filter
 
       /* Your program should read the sequence of input integers from standard input by using the Scanner class methods hasNextLong() and nextLong(). */
 
+      ArrayList<Integer> dynamic_array = new ArrayList<>();
+
+      int idx = 0;
       while (in.hasNextInt()) {
-         System.out.println(in.nextInt() + "!");
+         int new_val = in.nextInt();
+         dynamic_array.add(new_val);
+      }
+
+      String format = "%," + spacing + "d" ;
+
+      int i = 0;
+      while (i+columns <= dynamic_array.size()){
+
+         String cur_format = "";
+         for ( int j = 0 ; j < columns ; j++ ){
+            cur_format += format;
+         }
+
+         System.out.printf(cur_format, dynamic_array.get(i), dynamic_array.get(i+1), dynamic_array.get(i+2));
+         System.out.println();
+         i = i + 3;
+      }
+
+      if (dynamic_array.size() - i == 2){
+         String cur_format = format + format;
+         System.out.printf(cur_format, dynamic_array.get(i), dynamic_array.get(i+1));
+         i = i + 2;
+      }
+      else if (dynamic_array.size() - i == 1){
+         System.out.printf(format, dynamic_array.get(i));
+         i++;
+      }
+
+      if (DEBUG){
+         System.out.println("\nindex of i : " + i + "\n" + "dyn_size : " + dynamic_array.size());
+
       }
 
       in.close();
