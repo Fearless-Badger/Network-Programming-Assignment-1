@@ -1,6 +1,8 @@
 /*
-
-
+   Course: CS 33600
+   Name: Micah Najacht
+   Email: mnajacht@pnw.edu
+   Assignment : 1
 */
 
 import java.util.ArrayList;
@@ -17,26 +19,90 @@ import java.util.Properties;
 */
 public class Filter
 {
-   public static void main(String[] args)
+   public static void main(String[] args) throws IOException
    {
       final Scanner in = new Scanner(System.in);
 
-      boolean DEBUG = true;
+      boolean DEBUG = false;
 
-      int columns = 3;  // Default number of columns.
-      int spacing = 10; // Default number of spaces between the ones places of two adjacent integers.
-      int groups = 0;   // Default size of a group. Zero means no groups.
+      /*
+       * 1) Get parameters
+       *    - default values
+       *    - properties values
+       *    - environment values
+       *    - command line arguments
+       * 
+       * 2) read in integer input
+       *    - store in dynamic array
+       * 
+       * 3) print output
+       *    - loop through stored input, printing and formatting output
+       *  
+       */
+
+      /*
+       * 
+       * 1/28/2025 issue - Micah
+       * This program doesn't currently behave well in a stream/pipe environment.
+       * It reads in all the input, and stores it. This stored input is then looped over, formatted, and printed.
+       * Currently I use "print" instead of "write", so buffers aren't being utilized either. Each print call flushes the buffer.
+       * 
+       * How to fix -
+       * Trigger a function which uses write to write output to stdout whenever the input reaches a certain amount (buffer size or group size ???).
+       * Use write and work with the buffers to be more efficient. This would make it behave better when taking a large amount of data throught the input stream.
+       * 
+       * 
+       * 
+       */
+
+      // Default values
+      int columns = 3;  
+      int spacing = 10; 
+      int groups = 0;   
+
 
       // READ in the properties data, override the default values - filter.properties
+      Properties properties = new Properties();
+      try ( FileInputStream prop_stream = new FileInputStream("filter.properties")) {
+         properties.load(prop_stream);
+         columns = Integer.parseInt(properties.getProperty("columns"));
+         spacing = Integer.parseInt(properties.getProperty("spacing"));
+         groups  = Integer.parseInt(properties.getProperty("groups"));
+      } catch (FileNotFoundException e){
+         // do nothing
+      }
 
-      // READ in the environment values, from the env
-      // names = CS336_COLUMNS or CS336_SPACING or CS336_GROUPS
-      // convert string value to int using "parseInt()"
+      // environment values override both "default" and ".properties" values
+      
+      String env_cols   = System.getenv("CS336_COLUMNS");
+      String env_spaces = System.getenv("CS336_SPACING");
+      String env_groups = System.getenv("CS336_GROUPS");
 
-      // READ the command line args, override env. Use parseInt() again
+      if (env_cols != null){
+         columns = Integer.parseInt(env_cols);
+      }
+      if (env_spaces != null ){
+         spacing = Integer.parseInt(env_spaces);
+      }
+      if (env_groups != null){
+         groups = Integer.parseInt(env_groups);
+      }
 
-      /* Your program should read the sequence of input integers from standard input by using the Scanner class methods hasNextLong() and nextLong(). */
+      // Command line arguments override everything else
+      int number_of_args = args.length;
+      if (number_of_args > 0){
+         columns = Integer.parseInt(args[0]);
+      }
 
+      if (number_of_args > 1){
+         spacing = Integer.parseInt(args[1]);
+      }
+
+      if (number_of_args > 2){
+         groups = Integer.parseInt(args[2]);
+      }
+
+      // read in input
       ArrayList<Long> dynamic_array = new ArrayList<>();
 
       while (in.hasNextLong()) {
@@ -44,50 +110,49 @@ public class Filter
          dynamic_array.add(new_val);
       }
 
+      // configure printf format string
+      spacing++;
       String format = "%," + spacing + "d" ;
 
+
+      // print output
+      int group_count = 0;
       int count = 0;
-      int i = 0;
-      while (i < dynamic_array.size()){
+      for( int i = 0 ; i < dynamic_array.size() ; i++ ){
 
-         /*
-         String cur_format = "";
-         for ( int j = 0 ; j < columns ; j++ ){
-            cur_format += format;
-         }
-         */
-
+         // print and increment counters
          System.out.printf(format, dynamic_array.get(i));
-         i++;
+         count++;
+         group_count++;
          
 
-         if (i % columns == 0){
+         
+         // column breaking
+         if (count % columns == 0){
             System.out.println();
          }
-      }
+         
 
-      /*
-      int diff = dynamic_array.size() - i;
-      if (diff != 0){
-         String cur_format = "";
-         int leftover = 0;
-         long[] to_be_added = new long[diff];
-
-         for (int j = 0 ; j <= diff ; j++ ){
-            cur_format += format;
-            to_be_added[j] = dynamic_array.get(i+j);
-         }
-
-         while ( i < dynamic_array.size()){
-            System.out.printf(cur_format, to_be_added);
+         // grouping
+       
+         if (groups > 0 && group_count == groups){
+            if ( count % columns != 0 ){
+               System.out.println();
+            }
+            System.out.println();
+            group_count = 0;
+            count = 0;
          }
 
       }
-         */
+
+      // print newline, if needed
+      if (count % columns != 0){
+         System.out.println();
+      }
 
       if (DEBUG){
-         System.out.println("\nindex of i : " + i + "\n" + "dyn_size : " + dynamic_array.size() + "\n" + "diff : " + (dynamic_array.size() - i)); //+ diff );
-
+         System.out.println("\nindex of count : " + count + "\n" + "dyn_size : " + dynamic_array.size() + "\n" + "diff : " + (dynamic_array.size() - count)); //+ diff );
       }
 
       in.close();
