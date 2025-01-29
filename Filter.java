@@ -37,41 +37,56 @@ public class Filter
 
       /* Your program should read the sequence of input integers from standard input by using the Scanner class methods hasNextLong() and nextLong(). */
 
-      ArrayList<Integer> dynamic_array = new ArrayList<>();
+      ArrayList<Long> dynamic_array = new ArrayList<>();
 
-      int idx = 0;
-      while (in.hasNextInt()) {
-         int new_val = in.nextInt();
+      while (in.hasNextLong()) {
+         Long new_val = in.nextLong();
          dynamic_array.add(new_val);
       }
 
       String format = "%," + spacing + "d" ;
 
+      int count = 0;
       int i = 0;
-      while (i+columns <= dynamic_array.size()){
+      while (i < dynamic_array.size()){
 
+         /*
          String cur_format = "";
          for ( int j = 0 ; j < columns ; j++ ){
             cur_format += format;
          }
+         */
 
-         System.out.printf(cur_format, dynamic_array.get(i), dynamic_array.get(i+1), dynamic_array.get(i+2));
-         System.out.println();
-         i = i + 3;
-      }
-
-      if (dynamic_array.size() - i == 2){
-         String cur_format = format + format;
-         System.out.printf(cur_format, dynamic_array.get(i), dynamic_array.get(i+1));
-         i = i + 2;
-      }
-      else if (dynamic_array.size() - i == 1){
          System.out.printf(format, dynamic_array.get(i));
          i++;
+         
+
+         if (i % columns == 0){
+            System.out.println();
+         }
       }
 
+      /*
+      int diff = dynamic_array.size() - i;
+      if (diff != 0){
+         String cur_format = "";
+         int leftover = 0;
+         long[] to_be_added = new long[diff];
+
+         for (int j = 0 ; j <= diff ; j++ ){
+            cur_format += format;
+            to_be_added[j] = dynamic_array.get(i+j);
+         }
+
+         while ( i < dynamic_array.size()){
+            System.out.printf(cur_format, to_be_added);
+         }
+
+      }
+         */
+
       if (DEBUG){
-         System.out.println("\nindex of i : " + i + "\n" + "dyn_size : " + dynamic_array.size());
+         System.out.println("\nindex of i : " + i + "\n" + "dyn_size : " + dynamic_array.size() + "\n" + "diff : " + (dynamic_array.size() - i)); //+ diff );
 
       }
 
