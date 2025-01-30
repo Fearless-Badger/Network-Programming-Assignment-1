@@ -6,54 +6,23 @@
 */
 
 import java.util.ArrayList;
-import java.io.*;
 
 import java.util.Scanner;
 import java.util.Properties;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.FileNotFoundException;
 
 /**
    This program filters.
-
-   When playing with file filters, it is useful to know that "end-of-file" is
-   denoted at the command-line in Windows by Ctrl-Z and by Ctrl-D in Linux.
 */
 public class Filter
 {
    public static void main(String[] args) throws IOException
    {
+      // input stream
       final Scanner in = new Scanner(System.in);
-
-      boolean DEBUG = false;
-
-      /*
-       * 1) Get parameters
-       *    - default values
-       *    - properties values
-       *    - environment values
-       *    - command line arguments
-       * 
-       * 2) read in integer input
-       *    - store in dynamic array
-       * 
-       * 3) print output
-       *    - loop through stored input, printing and formatting output
-       *  
-       */
-
-      /*
-       * 
-       * 1/28/2025 issue - Micah
-       * This program doesn't currently behave well in a stream/pipe environment.
-       * It reads in all the input, and stores it. This stored input is then looped over, formatted, and printed.
-       * Currently I use "print" instead of "write", so buffers aren't being utilized either. Each print call flushes the buffer.
-       * 
-       * How to fix -
-       * Trigger a function which uses write to write output to stdout whenever the input reaches a certain amount (buffer size or group size ???).
-       * Use write and work with the buffers to be more efficient. This would make it behave better when taking a large amount of data throught the input stream.
-       * 
-       * 
-       * 
-       */
 
       // Default values
       int columns = 3;  
@@ -65,9 +34,21 @@ public class Filter
       Properties properties = new Properties();
       try ( FileInputStream prop_stream = new FileInputStream("filter.properties")) {
          properties.load(prop_stream);
-         columns = Integer.parseInt(properties.getProperty("columns"));
-         spacing = Integer.parseInt(properties.getProperty("spacing"));
-         groups  = Integer.parseInt(properties.getProperty("groups"));
+         int columns_canidate = Integer.parseInt(properties.getProperty("columns"));
+         int spacing_canidate = Integer.parseInt(properties.getProperty("spacing"));
+         int groups_canidate  = Integer.parseInt(properties.getProperty("groups"));
+
+         // check that values are positive
+         if (columns_canidate > 0){
+            columns = columns_canidate;
+         }
+         if (spacing_canidate > 0){
+            spacing = spacing_canidate;
+         }
+         if (groups_canidate > 0){
+            groups = groups_canidate;
+         }
+
       } catch (FileNotFoundException e){
          // do nothing
       }
@@ -78,27 +59,27 @@ public class Filter
       String env_spaces = System.getenv("CS336_SPACING");
       String env_groups = System.getenv("CS336_GROUPS");
 
-      if (env_cols != null){
+      if (env_cols != null && Integer.parseInt(env_cols) > 0){
          columns = Integer.parseInt(env_cols);
       }
-      if (env_spaces != null ){
+      if (env_spaces != null && Integer.parseInt(env_spaces) > 0){
          spacing = Integer.parseInt(env_spaces);
       }
-      if (env_groups != null){
+      if (env_groups != null && Integer.parseInt(env_groups) > 0){
          groups = Integer.parseInt(env_groups);
       }
 
       // Command line arguments override everything else
       int number_of_args = args.length;
-      if (number_of_args > 0){
+      if (number_of_args > 0 && Integer.parseInt(args[0]) > 0 ){
          columns = Integer.parseInt(args[0]);
       }
 
-      if (number_of_args > 1){
+      if (number_of_args > 1 && Integer.parseInt(args[1]) > 0 ) {
          spacing = Integer.parseInt(args[1]);
       }
 
-      if (number_of_args > 2){
+      if (number_of_args > 2 && Integer.parseInt(args[2]) > 0 ) {
          groups = Integer.parseInt(args[2]);
       }
 
@@ -133,7 +114,7 @@ public class Filter
          }
          
 
-         // grouping
+         // grouping logic
        
          if (groups > 0 && group_count == groups){
             if ( count % columns != 0 ){
@@ -151,10 +132,7 @@ public class Filter
          System.out.println();
       }
 
-      if (DEBUG){
-         System.out.println("\nindex of count : " + count + "\n" + "dyn_size : " + dynamic_array.size() + "\n" + "diff : " + (dynamic_array.size() - count)); //+ diff );
-      }
-
+      // close stream
       in.close();
 
    }
