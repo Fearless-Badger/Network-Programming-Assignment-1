@@ -5,11 +5,8 @@
    Assignment : 1
 */
 
-import java.util.ArrayList;
-
 import java.util.Scanner;
 import java.util.Properties;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.FileNotFoundException;
@@ -83,30 +80,23 @@ public class Filter
          groups = Integer.parseInt(args[2]);
       }
 
-      // read in input
-      ArrayList<Long> dynamic_array = new ArrayList<>();
-
-      while (in.hasNextLong()) {
-         Long new_val = in.nextLong();
-         dynamic_array.add(new_val);
-      }
-
       // configure printf format string
       spacing++;
       String format = "%," + spacing + "d" ;
 
-
-      // print output
+      // read in input
       int group_count = 0;
       int count = 0;
-      for( int i = 0 ; i < dynamic_array.size() ; i++ ){
+      while (in.hasNextLong()) {
 
-         // print and increment counters
-         System.out.printf(format, dynamic_array.get(i));
+         // print output
+         Long new_val = in.nextLong();
+         System.out.printf(format, new_val);
+
          count++;
          group_count++;
          
-
+         // Newline logic
          
          // column breaking
          if (count % columns == 0){
@@ -115,7 +105,6 @@ public class Filter
          
 
          // grouping logic
-       
          if (groups > 0 && group_count == groups){
             if ( count % columns != 0 ){
                System.out.println();
@@ -124,7 +113,6 @@ public class Filter
             group_count = 0;
             count = 0;
          }
-
       }
 
       // print newline, if needed

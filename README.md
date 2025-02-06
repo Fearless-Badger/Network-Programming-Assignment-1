@@ -1,6 +1,7 @@
 # Repo content
 
-This is the first homework assignment for my network programming class. 
+This assignment has me build a filter. My work can be viewed in the "Filter.java" file. It takes input from stdin, and provides its output to stdout. The program acts as a filter, where it processes its input and provides its output continuously. 
 
-The assignment is to build a filter, using java. See "hw1.html" for a full description of the assignment. After the assignment, I will reflect on what I learned and any mistakes I made.
+A mistake I made when first implementing this filter, was storing the input in a list, before proceeding with processing it. This means that the filter wouldn't actually act as a filter, but it would demand all the input before proceeding. 
 
+I fixed this problem, by ensuring that the data is immediately processed and printed to stdout. This change also reduces the space that the program requires. 
